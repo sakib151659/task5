@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:task5/home/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({Key? key}) : super(key: key);
 
@@ -9,6 +11,7 @@ class IntroductionScreen extends StatefulWidget {
 
 class _IntroductionScreenState extends State<IntroductionScreen> {
   final controller = PageController();
+  bool isLastPage = false;
 
   @override
   void dispose() {
@@ -60,6 +63,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         ),
         child: PageView(
           controller: controller,
+          onPageChanged: (index){
+            setState(() => isLastPage = index == 2);
+          },
           children: [
 
             buildPage(
@@ -86,7 +92,27 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         ),
       ),
 
-      bottomSheet: Container(
+      bottomSheet: isLastPage?
+      TextButton(
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5)
+          ),
+          primary: Colors.white,
+          backgroundColor: Colors.teal.shade700,
+          minimumSize: const Size.fromHeight(80)
+        ),
+          onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setBool('showHome',true);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePage())
+          );
+
+          },
+          child: const Text("Get Started", style: TextStyle(fontSize: 18),)
+      ):
+      Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         height: 80,
         child: Row(
